@@ -1,0 +1,25 @@
+﻿{
+  "Chart": {
+    "Symbol": "XAUUSD",
+    "Period": "m1"
+  },
+  "Parameters": {
+    "Bias": 0,
+    "EnableLogs": true,
+    "VolumeLots": 0.01,
+    "StopLossDollars": 20.0,
+    "TrailStartDollars": 2.0,
+    "TrailDistanceDollars": 1.0,
+    "MaxOpenTrades": 3,
+    "MinMinutesBetweenTrades": 10,
+    "MaxDollarLoss": 500.0,
+    "AtrTimeFrame": "m5",
+    "AtrPeriod": 10,
+    "MaxAtrDollars": 50.0,
+    "RangeLookbackBars": 10,
+    "MaxRangeDollars": 50.0,
+    "SmaPeriod": 20,
+    "MaxSmaSlopeDollars": 100.0,
+    "EntryDeviationAtr": 2.0
+  }
+}
