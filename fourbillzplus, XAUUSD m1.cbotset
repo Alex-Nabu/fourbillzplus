@@ -19,7 +19,6 @@
     "RangeLookbackBars": 10,
     "MaxRangeDollars": 50.0,
     "SmaPeriod": 20,
-    "MaxSmaSlopeDollars": 100.0,
     "EntryDeviationAtr": 2.0
   }
 }

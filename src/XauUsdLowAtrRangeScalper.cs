@@ -60,9 +60,6 @@ namespace cAlgo.Robots
         [Parameter("SMA Period", DefaultValue = 20)]
         public int SmaPeriod { get; set; }
 
-        [Parameter("Max SMA Slope Dollars", DefaultValue = 0.5)]
-        public double MaxSmaSlopeDollars { get; set; }
-
         [Parameter("Entry Deviation ATR", DefaultValue = 0.35)]
         public double EntryDeviationAtr { get; set; }
 
@@ -122,7 +119,7 @@ namespace cAlgo.Robots
                 return;
             }
 
-            if (_m15Bars.Count < Math.Max(RangeLookbackBars, SmaPeriod) + 5)
+            if (_m15Bars.Count < Math.Max(RangeLookbackBars, SmaPeriod))
             {
                 Log("Not enough bars loaded yet.");
                 return;
@@ -138,13 +135,14 @@ namespace cAlgo.Robots
                 return;
             }
 
-            bool ranging = IsRanging();
+            bool ranging = IsRanging(out double rangeDollars);
 
             Log("Is Ranging: " + ranging);
+            Log("Range Value: " + rangeDollars.ToString("0.00"));
 
             if (!ranging)
             {
-                Log("Market trending. No entry.");
+                Log("Range too wide. No entry.");
                 return;
             }
 
@@ -160,11 +158,20 @@ namespace cAlgo.Robots
             Log("SMA: " + sma.ToString("0.00"));
             Log("Deviation: " + deviation.ToString("0.00"));
 
-            bool longSignal = bid <= sma - deviation;
-            bool shortSignal = ask >= sma + deviation;
+            double longSignalPrice = sma - deviation;
+            double shortSignalPrice = sma + deviation;
+            double dollarsToLongSignal = Math.Max(0, bid - longSignalPrice);
+            double dollarsToShortSignal = Math.Max(0, shortSignalPrice - ask);
+
+            bool longSignal = bid <= longSignalPrice;
+            bool shortSignal = ask >= shortSignalPrice;
 
             Log("Long Signal: " + longSignal);
             Log("Short Signal: " + shortSignal);
+            Log("Long Signal Price: " + longSignalPrice.ToString("0.00"));
+            Log("Short Signal Price: " + shortSignalPrice.ToString("0.00"));
+            Log("Dollars To Long Signal: " + dollarsToLongSignal.ToString("0.00"));
+            Log("Dollars To Short Signal: " + dollarsToShortSignal.ToString("0.00"));
 
             if (longSignal && Bias != TradeBias.ShortOnly)
             {
@@ -241,7 +248,7 @@ namespace cAlgo.Robots
             }
         }
 
-        private bool IsRanging()
+        private bool IsRanging(out double rangeDollars)
         {
             int last = _m15Bars.Count - 1;
 
@@ -254,14 +261,9 @@ namespace cAlgo.Robots
                 lowest = Math.Min(lowest, _m15Bars.LowPrices[i]);
             }
 
-            double rangeDollars = highest - lowest;
+            rangeDollars = highest - lowest;
 
-            double smaNow = _sma.Result.LastValue;
-            double smaPast = _sma.Result.Last(5);
-            double slopeDollars = Math.Abs(smaNow - smaPast);
-
-            return rangeDollars <= MaxRangeDollars &&
-                   slopeDollars <= MaxSmaSlopeDollars;
+            return rangeDollars <= MaxRangeDollars;
         }
 
         private void Enter(TradeType tradeType)

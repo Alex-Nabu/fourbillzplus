@@ -4,7 +4,7 @@ A cTrader cBot for XAUUSD low-ATR range scalping.
 
 ## Bot
 
-`XauUsdLowAtrRangeScalper` trades only on `XAUUSD`. It looks for quiet ranging conditions using ATR, recent range width, and SMA slope, then enters mean-reversion trades around the SMA. It includes:
+`XauUsdLowAtrRangeScalper` trades only on `XAUUSD`. It looks for quiet ranging conditions using ATR and recent range width, then enters mean-reversion trades around the SMA. It includes:
 
 - Long/short/both trade bias
 - Max open trade limit
