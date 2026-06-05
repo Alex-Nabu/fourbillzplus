@@ -16,5 +16,5 @@ A Bot for XAUUSD low-ATR range scalping.
 
 ## Files
 
-- `src/XauUsdLowAtrRangeScalper.cs` - cBot source code
+- `src/XauUsdLowAtrRangeScalper.cs` - source code
 - `fourbillzplus.csproj` - lightweight C# project file for editor support
