@@ -108,20 +108,6 @@ namespace cAlgo.Robots
 
             Log("Open Positions: " + botPositions.Length);
 
-            if (Server.Time < _lastTradeTime.AddMinutes(MinMinutesBetweenTrades))
-            {
-                var remaining = (_lastTradeTime.AddMinutes(MinMinutesBetweenTrades) - Server.Time).TotalMinutes;
-
-                Log("Trade cooldown active. Minutes remaining: " + remaining.ToString("0.00"));
-                return;
-            }
-
-            if (botPositions.Length >= MaxOpenTrades)
-            {
-                Log("Max open trades reached.");
-                return;
-            }
-
             if (_m15Bars.Count < Math.Max(RangeLookbackBars, SmaPeriod))
             {
                 Log("Not enough bars loaded yet.");
@@ -132,22 +118,10 @@ namespace cAlgo.Robots
 
             Log("ATR Value: " + atrDollars.ToString("0.00"));
 
-            if (atrDollars > MaxAtrDollars)
-            {
-                Log("ATR too high. Market too volatile.");
-                return;
-            }
-
             bool ranging = IsRanging(out double rangeDollars);
 
             Log("Is Ranging: " + ranging);
             Log("Range Value: " + rangeDollars.ToString("0.00"));
-
-            if (!ranging)
-            {
-                Log("Range too wide. No entry.");
-                return;
-            }
 
             double sma = _sma.Result.LastValue;
             double atr = _atr.Result.LastValue;
@@ -177,6 +151,34 @@ namespace cAlgo.Robots
             Log("Short Signal Price: " + shortSignalPrice.ToString("0.00"));
             Log("Dollars To Long Signal: " + dollarsToLongSignal.ToString("0.00"));
             Log("Dollars To Short Signal: " + dollarsToShortSignal.ToString("0.00"));
+
+            bool cooldownActive = Server.Time < _lastTradeTime.AddMinutes(MinMinutesBetweenTrades);
+            bool maxOpenTradesReached = botPositions.Length >= MaxOpenTrades;
+
+            if (cooldownActive)
+            {
+                var remaining = (_lastTradeTime.AddMinutes(MinMinutesBetweenTrades) - Server.Time).TotalMinutes;
+
+                Log("Trade cooldown active. Minutes remaining: " + remaining.ToString("0.00"));
+            }
+
+            if (maxOpenTradesReached)
+                Log("Max open trades reached.");
+
+            if (cooldownActive || maxOpenTradesReached)
+                return;
+
+            if (atrDollars > MaxAtrDollars)
+            {
+                Log("ATR too high. Market too volatile.");
+                return;
+            }
+
+            if (!ranging)
+            {
+                Log("Range too wide. No entry.");
+                return;
+            }
 
             if (longSignal && Bias != TradeBias.ShortOnly)
             {
