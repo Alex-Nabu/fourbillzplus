@@ -13,6 +13,7 @@ A cTrader cBot for XAUUSD low-ATR range scalping.
 - Initial dollar-based stop loss
 - Dollar-based trailing stop
 - Optional debug logging
+- Separate ATR deviation settings for long and short entries
 
 ## Files
 

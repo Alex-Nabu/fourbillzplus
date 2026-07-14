@@ -60,8 +60,11 @@ namespace cAlgo.Robots
         [Parameter("SMA Period", DefaultValue = 20)]
         public int SmaPeriod { get; set; }
 
-        [Parameter("Entry Deviation ATR", DefaultValue = 0.35)]
-        public double EntryDeviationAtr { get; set; }
+        [Parameter("Long Entry Deviation ATR", DefaultValue = 0.35)]
+        public double LongEntryDeviationAtr { get; set; }
+
+        [Parameter("Short Entry Deviation ATR", DefaultValue = 0.35)]
+        public double ShortEntryDeviationAtr { get; set; }
 
         private const string Label = "XAUUSD_LOW_ATR_RANGE_SCALPER";
 
@@ -148,7 +151,8 @@ namespace cAlgo.Robots
 
             double sma = _sma.Result.LastValue;
             double atr = _atr.Result.LastValue;
-            double deviation = atr * EntryDeviationAtr;
+            double longDeviation = atr * LongEntryDeviationAtr;
+            double shortDeviation = atr * ShortEntryDeviationAtr;
 
             double bid = Symbol.Bid;
             double ask = Symbol.Ask;
@@ -156,10 +160,11 @@ namespace cAlgo.Robots
             Log("Bid: " + bid.ToString("0.00"));
             Log("Ask: " + ask.ToString("0.00"));
             Log("SMA: " + sma.ToString("0.00"));
-            Log("Deviation: " + deviation.ToString("0.00"));
+            Log("Long Deviation: " + longDeviation.ToString("0.00"));
+            Log("Short Deviation: " + shortDeviation.ToString("0.00"));
 
-            double longSignalPrice = sma - deviation;
-            double shortSignalPrice = sma + deviation;
+            double longSignalPrice = sma - longDeviation;
+            double shortSignalPrice = sma + shortDeviation;
             double dollarsToLongSignal = Math.Max(0, bid - longSignalPrice);
             double dollarsToShortSignal = Math.Max(0, shortSignalPrice - ask);
 
